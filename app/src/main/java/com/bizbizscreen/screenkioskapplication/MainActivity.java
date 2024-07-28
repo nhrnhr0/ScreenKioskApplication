@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.SslErrorHandler;
@@ -24,6 +25,8 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     final String TAG = "MainActivity";
+    private static final int MAX_RETRY_COUNT = 5;
+    private int retryCount = 0;
 
     private final ActivityResultLauncher<Intent> overlayPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -60,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         loadWebView("https://auth-sso.bizbiz.co.il/qr");
+//        loadWebView("https://home-desktop-4173.ms-global.co.il/qr");
+//        loadWebView("https://home-desktop-3012.ms-global.co.il/qr");
         Log.e(TAG, "onCreate: end");
 
 
@@ -74,14 +79,31 @@ public class MainActivity extends AppCompatActivity {
         progressdialog.setMessage("Loading screen...");
         progressdialog.setCanceledOnTouchOutside(false);
 
+
         /* JS start*/
         WebSettings settings = webView.getSettings();
         settings.setDomStorageEnabled(true);
         settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        settings.setDefaultTextEncodingName("utf-8");
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         /*  JS start*/
 
         Log.d("TAG", "loadWebView: "+myUrl);
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        webView.evaluateJavascript("window.performance.memory.jsHeapSizeLimit", null);
+        webView.setWebChromeClient(new WebChromeClient() {
+            public boolean onConsoleMessage(ConsoleMessage cm) {
+//                Log.d(TAG, cm.message());
+//
+//                // tooast message
+//                Toast.makeText(MainActivity.this, cm.message(), Toast.LENGTH_LONG).show();
+                return true;
+            }
+        });
         webView.loadUrl(myUrl);
         webView.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -94,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 if (!progressdialog.isShowing()) {
-                    Log.d("TAG", "Started: ");
+                    Log.d("  TAG", "Started: ");
                     progressdialog.show();
                 }
             }
@@ -109,7 +131,16 @@ public class MainActivity extends AppCompatActivity {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 if (progressdialog.isShowing()) {
                     progressdialog.dismiss();
-                    Log.d("TAG", "Err: ");
+                    Log.e("TAG", "Err: ");
+                }
+
+                if (retryCount < MAX_RETRY_COUNT) {
+                    retryCount++;
+                    Log.d(TAG, "Retrying... Attempt: " + retryCount);
+                    Toast.makeText(MainActivity.this, "Failed to load page after " + retryCount + " attempts", Toast.LENGTH_LONG).show();
+                    view.loadUrl(failingUrl);
+                } else {
+                    Toast.makeText(MainActivity.this, "Failed to load page after " + MAX_RETRY_COUNT + " attempts", Toast.LENGTH_LONG).show();
                 }
             }
         });
