@@ -4,14 +4,15 @@ plugins {
 
 android {
     namespace 'com.bizbizscreen.screenkioskapplication'
-    compileSdk 34
+    compileSdkVersion 34
+
 
     defaultConfig {
         applicationId "com.bizbizscreen.screenkioskapplication"
         minSdk 21
-        targetSdk 33
-        versionCode 5
-        versionName "5.0"
+        targetSdkVersion 34
+        versionCode 6
+        versionName "6.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
