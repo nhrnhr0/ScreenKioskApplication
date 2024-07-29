@@ -4,15 +4,15 @@ plugins {
 
 android {
     namespace 'com.bizbizscreen.screenkioskapplication'
-    compileSdkVersion 34
+    compileSdk 35
 
 
     defaultConfig {
         applicationId "com.bizbizscreen.screenkioskapplication"
         minSdk 21
         targetSdkVersion 34
-        versionCode 6
-        versionName "6.0"
+        versionCode 8
+        versionName "8.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -27,6 +27,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    buildToolsVersion '35.0.0'
 }
 
 dependencies {

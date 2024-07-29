@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> overlayPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Settings.canDrawOverlays(this)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Settings.canDrawOverlays(this)) {6464f8
                     // Permission granted, start the activity from the BroadcastReceiver
                     StartupOnBootUpReceiver receiver = new StartupOnBootUpReceiver();
                     receiver.startMainActivity(this);
